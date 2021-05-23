@@ -26,29 +26,6 @@ public class CourtsAPITest {
     @Autowired
     private MockMvc mvc;
 
-    @Test
-    public void givenCourts_whenGetCourts_thenStatus200() throws Exception {
-
-        mvc.perform(get("/courts")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content()
-                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(4)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].surface", is("clay")))
-                .andExpect(jsonPath("$[1].id", is(2)))
-                .andExpect(jsonPath("$[1].surface", is("hard")))
-                .andExpect(jsonPath("$[2].id", is(3)))
-                .andExpect(jsonPath("$[2].surface", is("grass")))
-                .andExpect(jsonPath("$[3].id", is(4)))
-                .andExpect(jsonPath("$[3].surface", is("carpet")))
-
-
-        ;
-    }
-
-    @Test
     public void givenCourts_whenGetCourts_thenReturns4Courts() throws Exception {
 
         mvc.perform(get("/courts")
