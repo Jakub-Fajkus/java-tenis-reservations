@@ -31,14 +31,33 @@ public class ReservationController {
             @ApiParam(value = "Starting date and time of the reservations", required = true, example = "2021-05-23T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime from,
             @ApiParam(value = "Ending date and time of the reservations", required = true, example = "2021-05-29T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime to
     ) {
-        if (!from.isBefore(to)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the 'from' date must be before the 'to' date");
-        }
+        validateDates(from, to);
 
         return storage.getReservations().stream()
                 .filter(reservation -> reservation.getCourt().getId().equals(id))
                 .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from))
                 .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = APIUris.ROOT_URI_CUSTOMER_RESERVATIONS, produces = "application/json")
+    public List<ReservationDTO> getReservationsForTelephoneNumber(
+            @ApiParam(value = "Telephone number of a customer (with international dialing code, but without the plus sign)") @PathVariable String telephone,
+            @ApiParam(value = "Starting date and time of the reservations", required = true, example = "2021-05-23T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime from,
+            @ApiParam(value = "Ending date and time of the reservations", required = true, example = "2021-05-29T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime to
+    ) {
+        validateDates(from, to);
+
+        return storage.getReservations().stream()
+                .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
+                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from))
+                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
+                .collect(Collectors.toList());
+    }
+
+    private void validateDates(LocalDateTime from, LocalDateTime to) {
+        if (!from.isBefore(to)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the 'from' date must be before the 'to' date");
+        }
     }
 }
