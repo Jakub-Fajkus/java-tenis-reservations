@@ -17,28 +17,28 @@ public class ReservationsStorage {
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 23, 13, 0),
                         LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
-                        new CustomerDTO("0420123456789", "Pepa", "Novak"),
+                        new CustomerDTO("420123456789", "Pepa", "Novak"),
                         new CourtDTO(1L, "clay"),
                         Match.SINGLES
                 ),
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
                         LocalDateTime.of(2021, Month.MAY, 23, 16, 0),
-                        new CustomerDTO("0420432456789", "Tomas", "Sedy"),
+                        new CustomerDTO("420432456789", "Tomas", "Sedy"),
                         new CourtDTO(1L, "clay"),
                         Match.SINGLES
                 ),
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
                         LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
-                        new CustomerDTO("0420765375683", "Jiri", "Cervenka"),
+                        new CustomerDTO("420765375683", "Jiri", "Cervenka"),
                         new CourtDTO(1L, "clay"),
                         Match.DOUBLES
                 ),
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
                         LocalDateTime.of(2021, Month.MAY, 24, 11, 45),
-                        new CustomerDTO("0420908654387", "Tomas", "Maly"),
+                        new CustomerDTO("420908654387", "Tomas", "Maly"),
                         new CourtDTO(1L, "clay"),
                         Match.DOUBLES
                 ),
@@ -46,14 +46,14 @@ public class ReservationsStorage {
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
                         LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
-                        new CustomerDTO("0420765375683", "Jiri", "Cervenka"),
+                        new CustomerDTO("420765375683", "Jiri", "Cervenka"),
                         new CourtDTO(2L, "hard"),
                         Match.DOUBLES
                 ),
                 new ReservationDTO(
                         LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
                         LocalDateTime.of(2021, Month.MAY, 24, 11, 45),
-                        new CustomerDTO("0420908654387", "Tomas", "Maly"),
+                        new CustomerDTO("420908654387", "Tomas", "Maly"),
                         new CourtDTO(2L, "hard"),
                         Match.DOUBLES
                 )
