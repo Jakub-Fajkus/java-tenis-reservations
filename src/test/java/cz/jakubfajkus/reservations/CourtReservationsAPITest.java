@@ -15,10 +15,10 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -106,7 +106,7 @@ public class CourtReservationsAPITest {
                 LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
                 LocalDateTime.of(2021, Month.MAY, 28, 10, 0),
                 2L,
-                1
+                2
         );
     }
 
@@ -133,8 +133,8 @@ public class CourtReservationsAPITest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$..from", Every.everyItem(greaterThan(dateFromFormatted))))
-                .andExpect(jsonPath("$..to", Every.everyItem(lessThan(dateToFormatted))))
+                .andExpect(jsonPath("$..from", Every.everyItem(greaterThanOrEqualTo(dateFromFormatted))))
+                .andExpect(jsonPath("$..to", Every.everyItem(lessThanOrEqualTo(dateToFormatted))))
                 .andExpect(jsonPath("$", hasSize(countOfReservations)))
         ;
     }

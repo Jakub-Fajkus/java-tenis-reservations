@@ -37,8 +37,8 @@ public class ReservationController {
 
         return storage.getReservations().stream()
                 .filter(reservation -> reservation.getCourt().getId().equals(id))
-                .filter(reservation -> reservation.getFrom().isAfter(from))
-                .filter(reservation -> reservation.getTo().isBefore(to))
+                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from))
+                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
                 .collect(Collectors.toList());
     }
 }
