@@ -1,5 +1,6 @@
 package cz.jakubfajkus.reservations;
 
+import cz.jakubfajkus.reservations.utils.IsoDateFormatter;
 import org.hamcrest.core.Every;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -38,8 +38,8 @@ public class CourtReservationsAPITest {
     public void givenReservations_whenGivenInvalidDateRange_thenReturns400BadRequest() throws Exception {
 
         mvc.perform(get("/courts/1/reservations")
-                .param("from", formatDate(LocalDateTime.of(2024, Month.MAY, 23, 12, 48)))
-                .param("to", formatDate(LocalDateTime.of(2021, Month.MAY, 28, 12, 48)))
+                .param("from", IsoDateFormatter.format(LocalDateTime.of(2024, Month.MAY, 23, 12, 48)))
+                .param("to", IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 28, 12, 48)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
         ;
@@ -49,8 +49,8 @@ public class CourtReservationsAPITest {
     public void givenReservations_whenReservationsForCourt1_thenReturnsFourReservationsForCourt1() throws Exception {
 
         mvc.perform(get("/courts/1/reservations")
-                .param("from", formatDate(LocalDateTime.of(2021, Month.MAY, 23, 12, 48, 2)))
-                .param("to", formatDate(LocalDateTime.of(2021, Month.MAY, 28, 12, 48, 2)))
+                .param("from", IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 23, 12, 48, 2)))
+                .param("to", IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 28, 12, 48, 2)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content()
@@ -63,8 +63,8 @@ public class CourtReservationsAPITest {
     public void givenReservations_whenReservationsForCourt1_thenReturnsOnlyReservationsForCourt1() throws Exception {
 
         mvc.perform(get("/courts/1/reservations")
-                .param("from", formatDate(LocalDateTime.of(2021, Month.MAY, 23, 12, 48, 2)))
-                .param("to", formatDate(LocalDateTime.of(2021, Month.MAY, 28, 12, 48, 2)))
+                .param("from", IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 23, 12, 48, 2)))
+                .param("to", IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 28, 12, 48, 2)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content()
@@ -77,8 +77,8 @@ public class CourtReservationsAPITest {
     public void givenReservations_whenReservationsForCourt1WithDateIntervalWithoutReservations_thenReturnsEmptyList() throws Exception {
 
         mvc.perform(get("/courts/1/reservations")
-                .param("from", formatDate(LocalDateTime.of(2030, Month.MAY, 20, 12, 20)))
-                .param("to", formatDate(LocalDateTime.of(2030, Month.MAY, 22, 12, 20)))
+                .param("from", IsoDateFormatter.format(LocalDateTime.of(2030, Month.MAY, 20, 12, 20)))
+                .param("to", IsoDateFormatter.format(LocalDateTime.of(2030, Month.MAY, 22, 12, 20)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content()
@@ -122,8 +122,8 @@ public class CourtReservationsAPITest {
     }
 
     private void checkReservations(LocalDateTime dateFrom, LocalDateTime dateTo, final Long courtId, int countOfReservations) throws Exception {
-        String dateFromFormatted = formatDate(dateFrom);
-        String dateToFormatted = formatDate(dateTo);
+        String dateFromFormatted = IsoDateFormatter.format(dateFrom);
+        String dateToFormatted = IsoDateFormatter.format(dateTo);
 
 
         mvc.perform(get("/courts/" + courtId + "/reservations")
@@ -139,7 +139,5 @@ public class CourtReservationsAPITest {
         ;
     }
 
-    private String formatDate(LocalDateTime dateFrom) {
-        return dateFrom.format(DateTimeFormatter.ISO_DATE_TIME);
-    }
+
 }
