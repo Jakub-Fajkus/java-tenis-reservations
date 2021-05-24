@@ -2,9 +2,9 @@ package cz.jakubfajkus.reservations.dto;
 
 public class CourtDTO {
     private Long id;
-    private String surface;
+    private CourtSurface surface;
 
-    public CourtDTO(Long id, String surface) {
+    public CourtDTO(Long id, CourtSurface surface) {
         this.id = id;
         this.surface = surface;
     }
@@ -17,11 +17,11 @@ public class CourtDTO {
         this.id = id;
     }
 
-    public String getSurface() {
+    public CourtSurface getSurface() {
         return surface;
     }
 
-    public void setSurface(String surface) {
+    public void setSurface(CourtSurface surface) {
         this.surface = surface;
     }
 }

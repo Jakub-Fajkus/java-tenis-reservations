@@ -36,13 +36,13 @@ public class CourtsAPITest {
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].surface", is("clay")))
+                .andExpect(jsonPath("$[0].surface", is("CLAY")))
                 .andExpect(jsonPath("$[1].id", is(2)))
-                .andExpect(jsonPath("$[1].surface", is("hard")))
+                .andExpect(jsonPath("$[1].surface", is("HARD")))
                 .andExpect(jsonPath("$[2].id", is(3)))
-                .andExpect(jsonPath("$[2].surface", is("grass")))
+                .andExpect(jsonPath("$[2].surface", is("GRASS")))
                 .andExpect(jsonPath("$[3].id", is(4)))
-                .andExpect(jsonPath("$[3].surface", is("carpet")))
+                .andExpect(jsonPath("$[3].surface", is("CARPET")))
         ;
     }
 }
