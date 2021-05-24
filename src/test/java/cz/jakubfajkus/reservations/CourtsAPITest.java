@@ -26,6 +26,7 @@ public class CourtsAPITest {
     @Autowired
     private MockMvc mvc;
 
+    @Test
     public void givenCourts_whenGetCourts_thenReturns4Courts() throws Exception {
 
         mvc.perform(get("/courts")
