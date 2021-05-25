@@ -3,9 +3,11 @@ package cz.jakubfajkus.reservations.service;
 import cz.jakubfajkus.reservations.dto.CourtSurface;
 import cz.jakubfajkus.reservations.dto.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Component
 public class ReservationPriceCalculatorImpl implements ReservationPriceCalculator {
 
     @Override
