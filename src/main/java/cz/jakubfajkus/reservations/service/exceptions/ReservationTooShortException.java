@@ -1,7 +1,7 @@
 package cz.jakubfajkus.reservations.service.exceptions;
 
 public class ReservationTooShortException extends Exception {
-    private int minimalDurationInMinutes;
+    private final int minimalDurationInMinutes;
 
     public ReservationTooShortException(int minimalDurationInMinutes) {
         this.minimalDurationInMinutes = minimalDurationInMinutes;

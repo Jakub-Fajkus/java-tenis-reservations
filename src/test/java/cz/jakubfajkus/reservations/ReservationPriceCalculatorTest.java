@@ -1,10 +1,10 @@
 package cz.jakubfajkus.reservations;
 
 import cz.jakubfajkus.reservations.dto.CourtDTO;
-import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
-import cz.jakubfajkus.reservations.service.entity.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
+import cz.jakubfajkus.reservations.service.entity.CourtSurface;
+import cz.jakubfajkus.reservations.service.entity.Match;
 import cz.jakubfajkus.reservations.utils.ReservationPriceCalculator;
 import cz.jakubfajkus.reservations.utils.ReservationPriceCalculatorImpl;
 import org.junit.jupiter.api.BeforeEach;

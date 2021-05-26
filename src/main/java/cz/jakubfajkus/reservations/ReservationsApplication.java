@@ -28,52 +28,52 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class ReservationsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ReservationsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ReservationsApplication.class, args);
+    }
 
-	@Bean
-	public DataSource dataSource() {
+    @Bean
+    public DataSource dataSource() {
 
-		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-		return builder.setType(EmbeddedDatabaseType.H2).build();
-	}
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
+    }
 
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-		vendorAdapter.setGenerateDdl(true);
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
 
-		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-		factory.setJpaVendorAdapter(vendorAdapter);
-		factory.setPackagesToScan(Court.class.getPackageName());
-		factory.setDataSource(dataSource());
-		return factory;
-	}
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan(Court.class.getPackageName());
+        factory.setDataSource(dataSource());
+        return factory;
+    }
 
-	@Bean
-	public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
 
-		JpaTransactionManager txManager = new JpaTransactionManager();
-		txManager.setEntityManagerFactory(entityManagerFactory);
-		return txManager;
-	}
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(entityManagerFactory);
+        return txManager;
+    }
 
 
-	@Configuration
-	public class SpringFoxConfig {
-		@Bean
-		public Docket api() {
-			return new Docket(DocumentationType.SWAGGER_2)
-					.select()
-					.apis(RequestHandlerSelectors.basePackage(ReservationController.class.getPackageName()))
-					.paths(PathSelectors.any())
-					.build()
-					.useDefaultResponseMessages(false)
+    @Configuration
+    public class SpringFoxConfig {
+        @Bean
+        public Docket api() {
+            return new Docket(DocumentationType.SWAGGER_2)
+                    .select()
+                    .apis(RequestHandlerSelectors.basePackage(ReservationController.class.getPackageName()))
+                    .paths(PathSelectors.any())
+                    .build()
+                    .useDefaultResponseMessages(false)
 
-			;
-		}
-	}
+                    ;
+        }
+    }
 
 }

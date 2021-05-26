@@ -1,8 +1,8 @@
 package cz.jakubfajkus.reservations.utils;
 
+import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import cz.jakubfajkus.reservations.service.entity.Match;
-import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
