@@ -20,7 +20,7 @@ public class ReservationsStorage {
     private List<ReservationDTO> data;
 
     public ReservationsStorage() {
-        data = createTestData();
+        reset();
     }
 
     public List<ReservationDTO> getReservations() {
@@ -49,52 +49,49 @@ public class ReservationsStorage {
         return data.stream().map(ReservationDTO::getCourt).filter(court -> court.getId().equals(courtId)).findAny();
     }
 
-    public List<ReservationDTO> createTestData() {
-        data = List.of(
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 23, 13, 0),
-                        LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
-                        new CustomerDTO("420123456789", "Pepa", "Novak"),
-                        new CourtDTO(1L, CourtSurface.CLAY),
-                        Match.SINGLES
-                ),
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
-                        LocalDateTime.of(2021, Month.MAY, 23, 16, 0),
-                        new CustomerDTO("420432456789", "Tomas", "Sedy"),
-                        new CourtDTO(1L, CourtSurface.CLAY),
-                        Match.SINGLES
-                ),
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
-                        LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
-                        new CustomerDTO("420765375683", "Jiri", "Cervenka"),
-                        new CourtDTO(1L, CourtSurface.CLAY),
-                        Match.DOUBLES
-                ),
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
-                        LocalDateTime.of(2021, Month.MAY, 24, 11, 45),
-                        new CustomerDTO("420908654387", "Tomas", "Maly"),
-                        new CourtDTO(1L, CourtSurface.CLAY),
-                        Match.DOUBLES
-                ),
-
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
-                        LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
-                        new CustomerDTO("420765375683", "Jiri", "Cervenka"),
-                        new CourtDTO(2L, CourtSurface.HARD),
-                        Match.DOUBLES
-                ),
-                new ReservationDTO(
-                        LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
-                        LocalDateTime.of(2021, Month.MAY, 24, 11, 45),
-                        new CustomerDTO("420908654387", "Tomas", "Maly"),
-                        new CourtDTO(2L, CourtSurface.HARD),
-                        Match.DOUBLES
-                )
-        );
-        return data;
+    public void reset() {
+        data = new ArrayList<>();
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 23, 13, 0),
+                LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
+                new CustomerDTO("420123456789", "Pepa", "Novak"),
+                new CourtDTO(1L, CourtSurface.CLAY),
+                Match.SINGLES
+        ));
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 23, 14, 0),
+                LocalDateTime.of(2021, Month.MAY, 23, 16, 0),
+                new CustomerDTO("420432456789", "Tomas", "Sedy"),
+                new CourtDTO(1L, CourtSurface.CLAY),
+                Match.SINGLES
+        ));
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
+                LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
+                new CustomerDTO("420765375683", "Jiri", "Cervenka"),
+                new CourtDTO(1L, CourtSurface.CLAY),
+                Match.DOUBLES
+        ));
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 24, 12, 30),
+                LocalDateTime.of(2021, Month.MAY, 24, 14, 45),
+                new CustomerDTO("420908654387", "Tomas", "Maly"),
+                new CourtDTO(1L, CourtSurface.CLAY),
+                Match.DOUBLES
+        ));
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
+                LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
+                new CustomerDTO("420765375683", "Jiri", "Cervenka"),
+                new CourtDTO(2L, CourtSurface.HARD),
+                Match.DOUBLES
+        ));
+        data.add(new ReservationDTO(
+                LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
+                LocalDateTime.of(2021, Month.MAY, 24, 11, 45),
+                new CustomerDTO("420908654387", "Tomas", "Maly"),
+                new CourtDTO(2L, CourtSurface.HARD),
+                Match.DOUBLES
+        ));
     }
 }

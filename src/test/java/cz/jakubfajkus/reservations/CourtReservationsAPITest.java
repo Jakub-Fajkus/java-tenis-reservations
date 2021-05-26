@@ -2,6 +2,7 @@ package cz.jakubfajkus.reservations;
 
 import cz.jakubfajkus.reservations.utils.IsoDateFormatter;
 import org.hamcrest.core.Every;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CourtReservationsAPITest {
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private ReservationsStorage storage;
+
+    @BeforeEach
+    public void beforeEach() {
+        storage.reset();
+    }
 
     @Test
     public void givenReservations_whenGivenInvalidDateRange_thenReturns400BadRequest() throws Exception {
