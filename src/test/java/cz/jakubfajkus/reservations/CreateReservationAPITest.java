@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
-import cz.jakubfajkus.reservations.dto.Match;
+import cz.jakubfajkus.reservations.service.entity.Match;
 import cz.jakubfajkus.reservations.utils.IsoDateFormatter;
 import org.hamcrest.core.Every;
 import org.junit.jupiter.api.BeforeEach;

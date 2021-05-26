@@ -1,5 +1,7 @@
 package cz.jakubfajkus.reservations.dto;
 
+import cz.jakubfajkus.reservations.service.entity.Match;
+
 import java.time.LocalDateTime;
 
 public class ReservationDTO {

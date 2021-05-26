@@ -1,6 +1,6 @@
 package cz.jakubfajkus.reservations.dto;
 
-import org.springframework.validation.annotation.Validated;
+import cz.jakubfajkus.reservations.service.entity.Match;
 
 import javax.validation.constraints.NotNull;
 import java.time.Duration;

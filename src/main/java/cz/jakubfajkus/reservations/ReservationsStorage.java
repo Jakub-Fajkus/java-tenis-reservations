@@ -4,7 +4,7 @@ import cz.jakubfajkus.reservations.dto.CourtDTO;
 import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
-import cz.jakubfajkus.reservations.dto.Match;
+import cz.jakubfajkus.reservations.service.entity.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
