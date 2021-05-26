@@ -2,7 +2,7 @@ package cz.jakubfajkus.reservations.controllers;
 
 import cz.jakubfajkus.reservations.APIUris;
 import cz.jakubfajkus.reservations.dto.CourtDTO;
-import cz.jakubfajkus.reservations.dto.CourtSurface;
+import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

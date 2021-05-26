@@ -1,4 +1,4 @@
-package cz.jakubfajkus.reservations.dto;
+package cz.jakubfajkus.reservations.service.entity;
 
 public enum CourtSurface {
     CLAY,

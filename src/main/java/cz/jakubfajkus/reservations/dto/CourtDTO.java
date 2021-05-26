@@ -1,5 +1,7 @@
 package cz.jakubfajkus.reservations.dto;
 
+import cz.jakubfajkus.reservations.service.entity.CourtSurface;
+
 public class CourtDTO {
     private Long id;
     private CourtSurface surface;

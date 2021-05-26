@@ -1,7 +1,7 @@
 package cz.jakubfajkus.reservations;
 
 import cz.jakubfajkus.reservations.dto.CourtDTO;
-import cz.jakubfajkus.reservations.dto.CourtSurface;
+import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
 import cz.jakubfajkus.reservations.dto.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
