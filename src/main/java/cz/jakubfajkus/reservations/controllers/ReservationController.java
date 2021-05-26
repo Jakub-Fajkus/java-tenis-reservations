@@ -4,6 +4,7 @@ import cz.jakubfajkus.reservations.APIUris;
 import cz.jakubfajkus.reservations.ReservationsStorage;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
+import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
 import cz.jakubfajkus.reservations.service.ReservationPriceCalculator;
 import io.swagger.annotations.ApiParam;
@@ -58,9 +59,9 @@ public class ReservationController {
         validateDates(from, to);
 
         return storage.getReservations().stream()
-                .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
-                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from))
+                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from)) //todo: use storage method!
                 .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
+                .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
                 .collect(Collectors.toList());
     }
 
@@ -69,12 +70,14 @@ public class ReservationController {
         validateDates(reservation.getFrom(), reservation.getTo());
 
         checkThatTheReservationIsOnlyForASingleDay(reservation); //todo: bussiness logic, move to somewhere else!
-        checkThatThDurationOfTheReservationIsLongEnough(reservation); //todo: bussiness logic, move to somewhere else!
+        checkThatTheDurationOfTheReservationIsLongEnough(reservation); //todo: bussiness logic, move to somewhere else!
 
         try {
             return priceCalculator.calculate(storage.addReservation(reservation));
         } catch (CourtNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Court with courtId " + reservation.getCourt() + " not found");
+        } catch (CourtAlreadyReservedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The court is already reserved for this time period");
         }
     }
 
@@ -86,7 +89,7 @@ public class ReservationController {
         }
     }
 
-    private void checkThatThDurationOfTheReservationIsLongEnough(CreateReservationDTO reservation) {
+    private void checkThatTheDurationOfTheReservationIsLongEnough(CreateReservationDTO reservation) {
         if (reservation.getDurationInMinutes() < 30) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservations are required to have at least 30 minutes");
         }

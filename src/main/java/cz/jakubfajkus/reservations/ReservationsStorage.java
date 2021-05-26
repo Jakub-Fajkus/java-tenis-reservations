@@ -6,13 +6,16 @@ import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
 import cz.jakubfajkus.reservations.dto.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
+import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class ReservationsStorage {
@@ -27,10 +30,14 @@ public class ReservationsStorage {
         return data;
     }
 
-    public ReservationDTO addReservation(CreateReservationDTO reservation) throws CourtNotFoundException {
+    public ReservationDTO addReservation(CreateReservationDTO reservation) throws CourtNotFoundException, CourtAlreadyReservedException {
         Optional<CourtDTO> court = getCourt(reservation.getCourt());
         if (court.isEmpty()) {
             throw new CourtNotFoundException("Court with id " + reservation.getCourt() + " not found");
+        }
+
+        if (isCourtAlreadyReservedForTheTimePeriod(reservation.getFrom(), reservation.getTo())) {
+            throw new CourtAlreadyReservedException();
         }
 
         CustomerDTO customer = createCustomerIfNeeded(reservation.getCustomer());
@@ -39,6 +46,21 @@ public class ReservationsStorage {
         data.add(newReservation);
 
         return newReservation;
+    }
+
+    public List<ReservationDTO> getReservationsWithin(LocalDateTime from, LocalDateTime to) {
+        return data.stream()
+                .filter(reservation ->
+                        (reservation.getFrom().isAfter(from) && reservation.getTo().isBefore(to)) ||
+                                (reservation.getFrom().isAfter(from) && reservation.getFrom().isBefore(to)) ||
+                                (reservation.getTo().isAfter(from) && reservation.getTo().isBefore(to)) ||
+                                (reservation.getFrom().isBefore(from) && reservation.getTo().isAfter(to))
+                )
+                .collect(Collectors.toList());
+    }
+
+    private boolean isCourtAlreadyReservedForTheTimePeriod(LocalDateTime from, LocalDateTime to) {
+        return !getReservationsWithin(from, to).isEmpty();
     }
 
     private CustomerDTO createCustomerIfNeeded(CustomerDTO customer) {

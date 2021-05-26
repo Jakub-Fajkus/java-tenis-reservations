@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
 import cz.jakubfajkus.reservations.dto.Match;
+import cz.jakubfajkus.reservations.utils.IsoDateFormatter;
+import org.hamcrest.core.Every;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -34,13 +43,13 @@ public class CreateReservationAPITest {
     @Autowired
     private ObjectMapper jackson;
 
+    @Autowired
+    private ReservationsStorage storage;
 
-    //bussiness logic?
-    // - reservation only for one day?
-    // - reservation for minimal amount of minutes?
-    //data integrity - multiple reservations for the same court
-    // - without collision
-    // - with collision
+    @BeforeEach
+    public void beforeEach() {
+        storage.reset();
+    }
 
 
     // test reservation fails when interval dates are out of order
@@ -117,13 +126,153 @@ public class CreateReservationAPITest {
         ;
     }
 
-//    test reservation fails when court is already reserved for any part of the interval
+//                LocalDateTime.of(2021, Month.MAY, 24, 8, 0),
+//                LocalDateTime.of(2021, Month.MAY, 24, 10, 0),
 
-//    test reservations succeeds when the court is available for the time interval
-//    test reservation succeeds and returns correct price
+    //    test reservation fails when court is already reserved for any part of the interval
+    //scenario C
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatHasAlreadyAReservationInsideTheNewReservationInterval_thenReturns400BadRequest() throws Exception {
 
-//    test reservation is added to the court reservations (API)
-//    test reservation is added to the user reservations (API)
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 24, 7, 30),
+                                LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
+                                1L
+                        )
+                ))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("The court is already reserved for this time period")))
+        ;
+    }
+
+    //    test reservation fails when court is already reserved for any part of the interval
+    //scenario D
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatHasAlreadyAReservationThatStartsInTheNewReservationInterval_thenReturns400BadRequest() throws Exception {
+
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 24, 7, 30),
+                                LocalDateTime.of(2021, Month.MAY, 24, 8, 30),
+                                1L
+                        )
+                ))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("The court is already reserved for this time period")))
+        ;
+    }
+
+    //    test reservation fails when court is already reserved for any part of the interval
+    //scenario E
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatHasAlreadyAReservationThatEndsInTheNewReservationInterval_thenReturns400BadRequest() throws Exception {
+
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 24, 9, 30),
+                                LocalDateTime.of(2021, Month.MAY, 24, 10, 30),
+                                1L
+                        )
+                ))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("The court is already reserved for this time period")))
+        ;
+    }
+
+    //    test reservation fails when court is already reserved for any part of the interval
+    //scenario F
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatHasAlreadyAReservationThatStartsBeforeAndEndsAfterTheNewReservationInterval_thenReturns400BadRequest() throws Exception {
+
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 24, 9, 0),
+                                LocalDateTime.of(2021, Month.MAY, 24, 9, 30),
+                                1L
+                        )
+                ))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("The court is already reserved for this time period")))
+        ;
+    }
+
+
+    //    test reservation succeeds and returns correct price
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatIsAvailableForTheNewReservationInterval_thenReturns200AndCorrectPrice() throws Exception {
+
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 28, 10, 0),
+                                LocalDateTime.of(2021, Month.MAY, 28, 12, 0),
+                                1L
+                        )
+                ))
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(120 * 5)))
+
+        ;
+    }
+
+    //    test reservation is added to the court reservations and user reservations (API)
+    @Test
+    public void givenCourts_whenCreatingAReservationForACourtThatIsAvailableForTheNewReservationInterval_thenReturns200AndReservationIsAccessibleByCourtAndCustomerAPI() throws Exception {
+
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        getReservationJson(
+                                LocalDateTime.of(2021, Month.MAY, 28, 10, 0),
+                                LocalDateTime.of(2021, Month.MAY, 28, 12, 0),
+                                1L
+                        )
+                ))
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+        ;
+
+        String telephoneNumber = "420432456789";
+
+        String searchFrom = IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 28, 9, 59));
+        String searchTo = IsoDateFormatter.format(LocalDateTime.of(2021, Month.MAY, 28, 12, 1));
+        mvc.perform(get("/courts/1/reservations")
+                .param("from", searchFrom)
+                .param("to", searchTo)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].court.id", is(1)))
+                .andExpect(jsonPath("$[0].customer.telephoneNumber", is(telephoneNumber)))
+        ;
+
+        mvc.perform(get("/customers/" + telephoneNumber + "/reservations")
+                .param("from", searchFrom)
+                .param("to", searchTo)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$..customer.telephoneNumber", Every.everyItem(is(telephoneNumber))))
+                .andExpect(jsonPath("$..court.id", is(List.of(1))))
+        ;
+    }
 
 
     private String getReservationJson(LocalDateTime from, LocalDateTime to, long court) throws JsonProcessingException {
