@@ -1,5 +1,6 @@
 package cz.jakubfajkus.reservations;
 
+import cz.jakubfajkus.reservations.controllers.ReservationController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -23,9 +24,12 @@ public class ReservationsApplication {
 		public Docket api() {
 			return new Docket(DocumentationType.SWAGGER_2)
 					.select()
-					.apis(RequestHandlerSelectors.any())
+					.apis(RequestHandlerSelectors.basePackage(ReservationController.class.getPackageName()))
 					.paths(PathSelectors.any())
-					.build();
+					.build()
+					.useDefaultResponseMessages(false)
+
+			;
 		}
 	}
 

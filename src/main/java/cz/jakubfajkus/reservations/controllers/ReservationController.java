@@ -8,6 +8,8 @@ import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
 import cz.jakubfajkus.reservations.service.ReservationPriceCalculator;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +38,10 @@ public class ReservationController {
     }
 
     @GetMapping(value = APIUris.ROOT_URI_COURT_RESERVATIONS, produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "When the `from` date is after the `to` date"),
+    })
     public List<ReservationDTO> getReservationsForCourt(
             @ApiParam(value = "Id of a court") @PathVariable Long id,
             @ApiParam(value = "Starting date and time of the reservations", required = true, example = "2021-05-23T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime from,
@@ -51,6 +57,10 @@ public class ReservationController {
     }
 
     @GetMapping(value = APIUris.ROOT_URI_CUSTOMER_RESERVATIONS, produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "When the `from` date is after the `to` date"),
+    })
     public List<ReservationDTO> getReservationsForTelephoneNumber(
             @ApiParam(value = "Telephone number of a customer (with international dialing code, but without the plus sign)") @PathVariable String telephone,
             @ApiParam(value = "Starting date and time of the reservations", required = true, example = "2021-05-23T12:48:02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam LocalDateTime from,
@@ -66,6 +76,14 @@ public class ReservationController {
     }
 
     @PostMapping(value = APIUris.ROOT_URI_RESERVATIONS, produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "When reservation is shorten that 30 minutes\n" +
+                    "When court with given `court.id` is not found\n" +
+                    "When reservation `from` date is after the `to` date\n" +
+                    "When court with given `court.id` is already reserved for the time period\n" +
+                    "When the reservation is not for a single day"),
+    })
     public long createReservation(@Validated @RequestBody CreateReservationDTO reservation) {
         validateDates(reservation.getFrom(), reservation.getTo());
 
