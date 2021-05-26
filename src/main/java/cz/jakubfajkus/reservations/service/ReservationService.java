@@ -16,4 +16,8 @@ public interface ReservationService {
     ReservationDTO addReservation(CreateReservationDTO reservation) throws CourtNotFoundException, CourtAlreadyReservedException, ReservationSpansAcrossMultipleDaysException, ReservationTooShortException;
 
     List<ReservationDTO> getReservationsWithin(LocalDateTime from, LocalDateTime to);
+
+    List<ReservationDTO> getReservationsForCourt(Long id, LocalDateTime from, LocalDateTime to);
+
+    List<ReservationDTO> getReservationsForCustomer(String telephone, LocalDateTime from, LocalDateTime to);
 }

@@ -70,7 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void checkThatCourtIsNotAlreadyReservedForTheTimePeriod(CreateReservationDTO reservation) throws CourtAlreadyReservedException {
-        if (isCourtAlreadyReservedForTheTimePeriod(reservation.getFrom(), reservation.getTo())) {
+        if (isCourtAlreadyReservedForTheTimePeriod(reservation.getCourt(), reservation.getFrom(), reservation.getTo())) {
             throw new CourtAlreadyReservedException();
         }
     }
@@ -81,6 +81,21 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll().stream()
                 .filter(reservation -> filterByDate(reservation, from, to))
                 .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReservationDTO> getReservationsForCourt(Long id, LocalDateTime from, LocalDateTime to) {
+        //we definitely want to rewrite this into a SQL query later
+        return getReservationsWithin(from, to).stream()
+                .filter(reservation -> reservation.getCourt().getId().equals(id))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReservationDTO> getReservationsForCustomer(String telephone, LocalDateTime from, LocalDateTime to) {
+        return getReservationsWithin(from, to).stream()
+                .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
                 .collect(Collectors.toList());
     }
 
@@ -100,10 +115,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private boolean filterByDate(Reservation reservation, LocalDateTime from, LocalDateTime to) {
-        return (isAfterOrEqual(reservation.getFrom(), from) && isBeforeOrEqual(reservation.getTo(), to)) ||
-                (isAfterOrEqual(reservation.getFrom(), from) && isBeforeOrEqual(reservation.getFrom(), to)) ||
-                (isAfterOrEqual(reservation.getTo(), from) && isBeforeOrEqual(reservation.getTo(), to)) ||
-                (isBeforeOrEqual(reservation.getFrom(), from) && isAfterOrEqual(reservation.getTo(), to));
+        return (isAfterOrEqual(reservation.getFrom(), from) && isBeforeOrEqual(reservation.getTo(), to)) || //a reservation lies inside the interval
+                (isAfterOrEqual(reservation.getFrom(), from) && isBeforeOrEqual(reservation.getFrom(), to)) || //a reservation starts inside the interval
+                (isAfterOrEqual(reservation.getTo(), from) && isBeforeOrEqual(reservation.getTo(), to)) || //a reservation ends inside the interval
+                (isBeforeOrEqual(reservation.getFrom(), from) && isAfterOrEqual(reservation.getTo(), to)); //a reservation starts before and ends after the interval
     }
 
     private boolean isAfterOrEqual(LocalDateTime a, LocalDateTime b) {
@@ -124,7 +139,7 @@ public class ReservationServiceImpl implements ReservationService {
                 r.getMatch());
     }
 
-    private boolean isCourtAlreadyReservedForTheTimePeriod(LocalDateTime from, LocalDateTime to) {
-        return !getReservationsWithin(from, to).isEmpty();
+    private boolean isCourtAlreadyReservedForTheTimePeriod(Long courtId, LocalDateTime from, LocalDateTime to) {
+        return !getReservationsForCourt(courtId, from, to).isEmpty();
     }
 }

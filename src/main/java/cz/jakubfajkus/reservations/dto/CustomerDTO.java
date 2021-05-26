@@ -1,5 +1,6 @@
 package cz.jakubfajkus.reservations.dto;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -8,13 +9,15 @@ public class CustomerDTO {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^\\d+$")
+    @Pattern(regexp = "^\\d+$", message = "The telephone number can contain only numbers")
     private String telephoneNumber;
 
     @NotNull
+    @NotEmpty
     private String firstName;
 
     @NotNull
+    @NotEmpty
     private String lastName;
 
     public CustomerDTO() {

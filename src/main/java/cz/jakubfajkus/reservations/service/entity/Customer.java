@@ -18,9 +18,11 @@ public class Customer {
     private String telephoneNumber;
 
     @NotNull
+    @Column(nullable = false)
     private String firstName;
 
     @NotNull
+    @Column(nullable = false)
     private String lastName;
 
     public Customer() {

@@ -34,14 +34,13 @@ public class ReservationsApplication {
 
     @Bean
     public DataSource dataSource() {
-
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+
         return builder.setType(EmbeddedDatabaseType.H2).build();
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
 
@@ -49,6 +48,7 @@ public class ReservationsApplication {
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan(Court.class.getPackageName());
         factory.setDataSource(dataSource());
+
         return factory;
     }
 
@@ -57,6 +57,7 @@ public class ReservationsApplication {
 
         JpaTransactionManager txManager = new JpaTransactionManager();
         txManager.setEntityManagerFactory(entityManagerFactory);
+
         return txManager;
     }
 

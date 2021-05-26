@@ -2,6 +2,7 @@ package cz.jakubfajkus.reservations.dto;
 
 import cz.jakubfajkus.reservations.service.entity.Match;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class CreateReservationDTO {
     private final LocalDateTime to;
 
     @NotNull
+    @Valid
     private final CustomerDTO customer;
 
     @NotNull

@@ -63,6 +63,29 @@ public class CreateReservationAPITest {
         ;
     }
 
+    @Test
+    public void givenCourts_whenFieldTelephoneIsMissing_thenReturns400BadRequest() throws Exception {
+        mvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    "{\n" +
+                    "  \"court\": 2,\n" +
+                    "  \"customer\": {\n" +
+                    "    \"firstName\": \"string\",\n" +
+                    "    \"id\": 0,\n" +
+                    "    \"lastName\": \"string\"\n" +
+                    "  },\n" +
+                    "  \"from\": \"2021-05-27T16:45:54.047Z\",\n" +
+                    "  \"match\": \"DOUBLES\",\n" +
+                    "  \"to\": \"2021-05-27T18:45:54.047Z\"\n" +
+                    "}"
+                ))
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason(containsString("telephoneNumber=must not be null")))
+
+        ;
+    }
+
     //test reservation fails when interval is not in one day
     @Test
     public void givenCourts_whenGivenDateRangeAcrossTwoDays_thenReturns400BadRequest() throws Exception {

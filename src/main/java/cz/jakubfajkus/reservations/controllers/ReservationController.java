@@ -14,7 +14,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 public class ReservationController {
@@ -51,9 +54,7 @@ public class ReservationController {
     ) {
         validateDates(from, to);
 
-        return reservationService.getReservationsWithin(from, to).stream()
-                .filter(reservation -> reservation.getCourt().getId().equals(id))
-                .collect(Collectors.toList());
+        return reservationService.getReservationsForCourt(id, from, to);
     }
 
     @GetMapping(value = APIUris.ROOT_URI_CUSTOMER_RESERVATIONS, produces = "application/json")
@@ -68,9 +69,7 @@ public class ReservationController {
     ) {
         validateDates(from, to);
 
-        return reservationService.getReservationsWithin(from, to).stream()
-                .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
-                .collect(Collectors.toList());
+        return reservationService.getReservationsForCustomer(telephone, from, to);
     }
 
     @PostMapping(value = APIUris.ROOT_URI_RESERVATIONS, produces = "application/json")
@@ -82,8 +81,12 @@ public class ReservationController {
                     "When court with given `court.id` is already reserved for the time period\n" +
                     "When the reservation is not for a single day"),
     })
-    public long createReservation(@Validated @RequestBody CreateReservationDTO reservation) {
+    public long createReservation(@Valid @RequestBody CreateReservationDTO reservation, BindingResult bindingResult) {
         validateDates(reservation.getFrom(), reservation.getTo());
+
+        if (bindingResult.hasErrors()) {
+            throwValidationErrorException(bindingResult);
+        }
 
         try {
             return priceCalculator.calculate(reservationService.addReservation(reservation));
@@ -103,4 +106,19 @@ public class ReservationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the 'from' date must be before the 'to' date");
         }
     }
+
+    protected void throwValidationErrorException(BindingResult bindingResult) {
+        Map<String, String> errors = new HashMap<>();
+
+        bindingResult.getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+
+            errors.put(fieldName, errorMessage);
+        });
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation failed:" + errors);
+    }
+
+
 }
