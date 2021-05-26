@@ -1,4 +1,4 @@
-package cz.jakubfajkus.reservations.service;
+package cz.jakubfajkus.reservations.utils;
 
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
 

@@ -5,8 +5,8 @@ import cz.jakubfajkus.reservations.dto.CourtSurface;
 import cz.jakubfajkus.reservations.dto.CustomerDTO;
 import cz.jakubfajkus.reservations.dto.Match;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
-import cz.jakubfajkus.reservations.service.ReservationPriceCalculator;
-import cz.jakubfajkus.reservations.service.ReservationPriceCalculatorImpl;
+import cz.jakubfajkus.reservations.utils.ReservationPriceCalculator;
+import cz.jakubfajkus.reservations.utils.ReservationPriceCalculatorImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

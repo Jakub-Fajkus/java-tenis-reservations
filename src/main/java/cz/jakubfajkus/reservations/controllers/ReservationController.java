@@ -6,7 +6,7 @@ import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
-import cz.jakubfajkus.reservations.service.ReservationPriceCalculator;
+import cz.jakubfajkus.reservations.utils.ReservationPriceCalculator;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
