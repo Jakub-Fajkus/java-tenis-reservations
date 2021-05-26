@@ -5,20 +5,40 @@ import javax.validation.constraints.Pattern;
 
 public class CustomerDTO {
 
+    private Long id;
+
     @NotNull
     @Pattern(regexp = "^\\d+$")
-    private final String telephoneNumber;
+    private String telephoneNumber;
 
     @NotNull
-    private final String firstName;
+    private String firstName;
 
     @NotNull
-    private final String lastName;
+    private String lastName;
+
+    public CustomerDTO() {
+    }
 
     public CustomerDTO(String telephoneNumber, String firstName, String lastName) {
         this.telephoneNumber = telephoneNumber;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public CustomerDTO(Long id, String telephoneNumber, String firstName, String lastName) {
+        this.id = id;
+        this.telephoneNumber = telephoneNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTelephoneNumber() {
@@ -31,5 +51,17 @@ public class CustomerDTO {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

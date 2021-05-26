@@ -7,13 +7,13 @@ import cz.jakubfajkus.reservations.dto.CustomerDTO;
 import cz.jakubfajkus.reservations.service.entity.Match;
 import cz.jakubfajkus.reservations.utils.IsoDateFormatter;
 import org.hamcrest.core.Every;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,20 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = ReservationsApplication.class)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CreateReservationAPITest {
     @Autowired
     private MockMvc mvc;
 
     @Autowired
     private ObjectMapper jackson;
-
-    @Autowired
-    private ReservationsStorage storage;
-
-    @BeforeEach
-    public void beforeEach() {
-        storage.reset();
-    }
 
 
     // test reservation fails when interval dates are out of order

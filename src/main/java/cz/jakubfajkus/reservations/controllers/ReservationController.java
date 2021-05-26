@@ -1,11 +1,11 @@
 package cz.jakubfajkus.reservations.controllers;
 
 import cz.jakubfajkus.reservations.APIUris;
-import cz.jakubfajkus.reservations.ReservationsStorage;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
-import cz.jakubfajkus.reservations.exceptions.CourtAlreadyReservedException;
-import cz.jakubfajkus.reservations.exceptions.CourtNotFoundException;
+import cz.jakubfajkus.reservations.service.ReservationService;
+import cz.jakubfajkus.reservations.service.exceptions.CourtAlreadyReservedException;
+import cz.jakubfajkus.reservations.service.exceptions.CourtNotFoundException;
 import cz.jakubfajkus.reservations.utils.ReservationPriceCalculator;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 @RestController
 public class ReservationController {
 
-    private final ReservationsStorage storage;
-
     private final ReservationPriceCalculator priceCalculator;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationsStorage storage, ReservationPriceCalculator priceCalculator) {
-        this.storage = storage;
+    public ReservationController(ReservationPriceCalculator priceCalculator,
+                                 ReservationService reservationService) {
         this.priceCalculator = priceCalculator;
+        this.reservationService = reservationService;
     }
 
     @GetMapping(value = APIUris.ROOT_URI_COURT_RESERVATIONS, produces = "application/json")
@@ -49,10 +49,8 @@ public class ReservationController {
     ) {
         validateDates(from, to);
 
-        return storage.getReservations().stream()
+        return reservationService.getReservationsWithin(from, to).stream()
                 .filter(reservation -> reservation.getCourt().getId().equals(id))
-                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from))
-                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
                 .collect(Collectors.toList());
     }
 
@@ -68,9 +66,7 @@ public class ReservationController {
     ) {
         validateDates(from, to);
 
-        return storage.getReservations().stream()
-                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getFrom().isAfter(from)) //todo: use storage method!
-                .filter(reservation -> reservation.getFrom().isEqual(from) || reservation.getTo().isBefore(to))
+        return reservationService.getReservationsWithin(from, to).stream()
                 .filter(reservation -> reservation.getCustomer().getTelephoneNumber().equals(telephone))
                 .collect(Collectors.toList());
     }
@@ -91,7 +87,7 @@ public class ReservationController {
         checkThatTheDurationOfTheReservationIsLongEnough(reservation); //todo: bussiness logic, move to somewhere else!
 
         try {
-            return priceCalculator.calculate(storage.addReservation(reservation));
+            return priceCalculator.calculate(reservationService.addReservation(reservation));
         } catch (CourtNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Court with courtId " + reservation.getCourt() + " not found");
         } catch (CourtAlreadyReservedException e) {
