@@ -7,6 +7,8 @@ import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.service.entity.Reservation;
 import cz.jakubfajkus.reservations.service.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.service.exceptions.CourtNotFoundException;
+import cz.jakubfajkus.reservations.service.exceptions.ReservationSpansAcrossMultipleDaysException;
+import cz.jakubfajkus.reservations.service.exceptions.ReservationTooShortException;
 import cz.jakubfajkus.reservations.service.repository.CourtRepository;
 import cz.jakubfajkus.reservations.service.repository.CustomerRepository;
 import cz.jakubfajkus.reservations.service.repository.ReservationRepository;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Component
 @Transactional
 public class ReservationServiceImpl implements ReservationService {
+
+    public static final int MINIMAL_DURATION_IN_MINUTES = 30;
 
     private final CourtService courtService;
     private final CustomerService customerService;
@@ -46,12 +50,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDTO addReservation(CreateReservationDTO reservation) throws CourtNotFoundException, CourtAlreadyReservedException {
+    public ReservationDTO addReservation(CreateReservationDTO reservation) throws CourtNotFoundException, CourtAlreadyReservedException, ReservationSpansAcrossMultipleDaysException, ReservationTooShortException {
         CourtDTO court = courtService.find(reservation.getCourt());
 
-        if (isCourtAlreadyReservedForTheTimePeriod(reservation.getFrom(), reservation.getTo())) {
-            throw new CourtAlreadyReservedException();
-        }
+        checkThatTheReservationIsOnlyForASingleDay(reservation);
+        checkThatCourtIsNotAlreadyReservedForTheTimePeriod(reservation);
+        checkThatTheDurationOfTheReservationIsLongEnough(reservation);
 
         CustomerDTO customer = customerService.findOrCreate(reservation.getCustomer());
 
@@ -65,6 +69,12 @@ public class ReservationServiceImpl implements ReservationService {
         ));
     }
 
+    private void checkThatCourtIsNotAlreadyReservedForTheTimePeriod(CreateReservationDTO reservation) throws CourtAlreadyReservedException {
+        if (isCourtAlreadyReservedForTheTimePeriod(reservation.getFrom(), reservation.getTo())) {
+            throw new CourtAlreadyReservedException();
+        }
+    }
+
     @Override
     public List<ReservationDTO> getReservationsWithin(LocalDateTime from, LocalDateTime to) {
         //we definitely want to rewrite this into a SQL query later
@@ -72,6 +82,21 @@ public class ReservationServiceImpl implements ReservationService {
                 .filter(reservation -> filterByDate(reservation, from, to))
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
+    }
+
+    private void checkThatTheReservationIsOnlyForASingleDay(CreateReservationDTO reservation) throws ReservationSpansAcrossMultipleDaysException {
+        if (reservation.getFrom().getYear() != reservation.getTo().getYear()
+                || reservation.getFrom().getMonth() != reservation.getTo().getMonth()
+                || reservation.getFrom().getDayOfMonth() != reservation.getTo().getDayOfMonth()) {
+
+            throw new ReservationSpansAcrossMultipleDaysException();
+        }
+    }
+
+    private void checkThatTheDurationOfTheReservationIsLongEnough(CreateReservationDTO reservation) throws ReservationTooShortException {
+        if (reservation.getDurationInMinutes() < MINIMAL_DURATION_IN_MINUTES) {
+            throw new ReservationTooShortException(MINIMAL_DURATION_IN_MINUTES);
+        }
     }
 
     private boolean filterByDate(Reservation reservation, LocalDateTime from, LocalDateTime to) {

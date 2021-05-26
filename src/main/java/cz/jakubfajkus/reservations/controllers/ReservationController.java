@@ -6,6 +6,8 @@ import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.service.ReservationService;
 import cz.jakubfajkus.reservations.service.exceptions.CourtAlreadyReservedException;
 import cz.jakubfajkus.reservations.service.exceptions.CourtNotFoundException;
+import cz.jakubfajkus.reservations.service.exceptions.ReservationSpansAcrossMultipleDaysException;
+import cz.jakubfajkus.reservations.service.exceptions.ReservationTooShortException;
 import cz.jakubfajkus.reservations.utils.ReservationPriceCalculator;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -74,7 +76,7 @@ public class ReservationController {
     @PostMapping(value = APIUris.ROOT_URI_RESERVATIONS, produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "When reservation is shorten that 30 minutes\n" +
+            @ApiResponse(code = 400, message = "When reservation is shorten that minimal reservation duration\n" +
                     "When court with given `court.id` is not found\n" +
                     "When reservation `from` date is after the `to` date\n" +
                     "When court with given `court.id` is already reserved for the time period\n" +
@@ -83,29 +85,16 @@ public class ReservationController {
     public long createReservation(@Validated @RequestBody CreateReservationDTO reservation) {
         validateDates(reservation.getFrom(), reservation.getTo());
 
-        checkThatTheReservationIsOnlyForASingleDay(reservation); //todo: bussiness logic, move to somewhere else!
-        checkThatTheDurationOfTheReservationIsLongEnough(reservation); //todo: bussiness logic, move to somewhere else!
-
         try {
             return priceCalculator.calculate(reservationService.addReservation(reservation));
         } catch (CourtNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Court with courtId " + reservation.getCourt() + " not found");
         } catch (CourtAlreadyReservedException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The court is already reserved for this time period");
-        }
-    }
-
-    private void checkThatTheReservationIsOnlyForASingleDay(CreateReservationDTO reservation) {
-        if (reservation.getFrom().getYear() != reservation.getTo().getYear()
-                || reservation.getFrom().getMonth() != reservation.getTo().getMonth()
-                || reservation.getFrom().getDayOfMonth() != reservation.getTo().getDayOfMonth()) {
+        } catch (ReservationSpansAcrossMultipleDaysException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservation across multiple days are not allowed");
-        }
-    }
-
-    private void checkThatTheDurationOfTheReservationIsLongEnough(CreateReservationDTO reservation) {
-        if (reservation.getDurationInMinutes() < 30) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservations are required to have at least 30 minutes");
+        } catch (ReservationTooShortException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservations are required to have at least " + e.getMinimalDurationInMinutes() + " minutes");
         }
     }
 

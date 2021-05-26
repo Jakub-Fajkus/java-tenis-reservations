@@ -82,7 +82,7 @@ public class CreateReservationAPITest {
     }
 
 
-    //    test reservation fails when date difference is too small (15-30 minutes?)
+    //    test reservation fails when date difference is too small (30 minutes)
     @Test
     public void givenCourts_whenGivenDateRangeIsLessThan30Minutes_thenReturns400BadRequest() throws Exception {
         mvc.perform(post("/reservations")
