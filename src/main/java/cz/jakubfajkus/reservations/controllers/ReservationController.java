@@ -1,6 +1,5 @@
 package cz.jakubfajkus.reservations.controllers;
 
-import cz.jakubfajkus.reservations.APIUris;
 import cz.jakubfajkus.reservations.dto.CreateReservationDTO;
 import cz.jakubfajkus.reservations.dto.ReservationDTO;
 import cz.jakubfajkus.reservations.service.ReservationService;
@@ -42,7 +41,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping(value = APIUris.ROOT_URI_COURT_RESERVATIONS, produces = "application/json")
+    @GetMapping(value = "/courts/{id}/reservations", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "When the `from` date is after the `to` date"),
@@ -57,7 +56,7 @@ public class ReservationController {
         return reservationService.getReservationsForCourt(id, from, to);
     }
 
-    @GetMapping(value = APIUris.ROOT_URI_CUSTOMER_RESERVATIONS, produces = "application/json")
+    @GetMapping(value = "/customers/{telephone}/reservations", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "When the `from` date is after the `to` date"),
@@ -72,7 +71,7 @@ public class ReservationController {
         return reservationService.getReservationsForCustomer(telephone, from, to);
     }
 
-    @PostMapping(value = APIUris.ROOT_URI_RESERVATIONS, produces = "application/json")
+    @PostMapping(value = "/reservations", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "When reservation is shorten that minimal reservation duration\n" +

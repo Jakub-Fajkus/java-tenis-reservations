@@ -1,6 +1,5 @@
 package cz.jakubfajkus.reservations.controllers;
 
-import cz.jakubfajkus.reservations.APIUris;
 import cz.jakubfajkus.reservations.dto.CourtDTO;
 import cz.jakubfajkus.reservations.service.CourtService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ public class CourtController {
         this.courtService = courtService;
     }
 
-    @GetMapping(value = APIUris.ROOT_URI_COURTS, produces = "application/json")
+    @GetMapping(value = "/courts", produces = "application/json")
     public List<CourtDTO> getAllCourts() {
         return courtService.getAllCourts();
     }
