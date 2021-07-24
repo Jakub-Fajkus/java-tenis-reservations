@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ReservationController {
                     "When court with given `court.id` is already reserved for the time period\n" +
                     "When the reservation is not for a single day"),
     })
-    public long createReservation(@Valid @RequestBody CreateReservationDTO reservation, BindingResult bindingResult) {
+    public BigDecimal createReservation(@Valid @RequestBody CreateReservationDTO reservation, BindingResult bindingResult) {
         validateDates(reservation.getFrom(), reservation.getTo());
 
         if (bindingResult.hasErrors()) {

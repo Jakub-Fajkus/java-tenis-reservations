@@ -5,22 +5,25 @@ import cz.jakubfajkus.reservations.service.entity.CourtSurface;
 import cz.jakubfajkus.reservations.service.entity.Match;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Duration;
 
 @Component
 public class ReservationPriceCalculatorImpl implements ReservationPriceCalculator {
 
     @Override
-    public long calculate(ReservationDTO reservation) {
+    public BigDecimal calculate(ReservationDTO reservation) {
         long lengthOfReservation = Math.abs(Duration.between(reservation.getFrom(), reservation.getTo()).toMinutes());
 
-        long price = lengthOfReservation * getPriceForCourtType(reservation.getCourt().getSurface());
+        BigDecimal price = new BigDecimal(lengthOfReservation * getPriceForCourtType(reservation.getCourt().getSurface()));
 
         if (reservation.getMatch() == Match.DOUBLES) {
-            price = (long) Math.ceil(price * 1.5);
+            price = price.multiply(new BigDecimal("1.5"));
         }
 
-        return price;
+        return price.round(new MathContext(price.precision(), RoundingMode.CEILING));
     }
 
     private long getPriceForCourtType(CourtSurface surface) {
